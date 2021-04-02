@@ -75,3 +75,12 @@ RUN pecl install xdebug \
 
 RUN rm -rf /tmp/pear \
     && apk del -f .build-deps
+
+RUN curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer;
+RUN composer global require laravel/installer
+ENV PATH="/root/.composer/vendor/bin:${PATH}"
+
+RUN apk add --update nodejs
+RUN apk add --update npm
+
+WORKDIR /var/www/html
