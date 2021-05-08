@@ -71,6 +71,9 @@ RUN apk add --no-cache imap-dev \
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
+
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
