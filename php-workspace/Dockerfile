@@ -29,6 +29,7 @@ RUN docker-php-ext-install \
     pdo_sqlite \
     phar \
     pcntl \
+    sockets \
     tokenizer \
     xml \
     xmlwriter \
