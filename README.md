@@ -14,3 +14,7 @@ docker images for personal use
 - [php workspace](php-workspace/Dockerfile)  
   `blood72/php:workspace` or `blood72/php:7.4-workspace`  
   a workspace with composer and npm on php \(default 7.4\)  
+
+- [python](python/Dockerfile)  
+  `blood72/python`  
+  python image with personal using packages  
