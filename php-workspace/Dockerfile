@@ -5,16 +5,26 @@ RUN apk add --no-cache --virtual .build-deps \
         libtool \
         libxml2-dev \
         openssl-dev \
-        sqlite-dev \
     && apk add --no-cache \
         git \
-        mysql-client \
-        mariadb-client \
-        libintl \
-        icu \
-        icu-dev \
-        libzip-dev \
         curl
+
+RUN apk add --no-cache --virtual .zip-build-deps \
+        libzip-dev \
+    && apk add --no-cache \
+        libzip \
+    && docker-php-ext-install \
+        zip \
+    && apk del -f .zip-build-deps
+
+RUN apk add --no-cache --virtual .intl-build-deps \
+        icu-dev \
+    && apk add --no-cache \
+        icu \
+        libintl \
+    && docker-php-ext-install \
+        intl \
+    && apk del -f .intl-build-deps
 
 RUN docker-php-ext-install \
     bcmath \
@@ -22,19 +32,41 @@ RUN docker-php-ext-install \
     fileinfo \
     filter \
     iconv \
-    intl \
     json \
     opcache \
     pdo \
-    pdo_mysql \
-    pdo_sqlite \
     phar \
     pcntl \
     tokenizer \
     xml \
     xmlrpc \
-    xmlwriter \
-    zip
+    xmlwriter
+
+RUN apk add --no-cache imap-dev \
+    && docker-php-ext-configure imap --with-imap-ssl \
+    && docker-php-ext-install imap
+
+RUN apk add --no-cache --virtual .sqlite-build-deps \
+        sqlite-dev \
+    && docker-php-ext-install \
+        pdo_sqlite \
+    && apk del -f .sqlite-build-deps
+
+RUN apk add --no-cache --virtual .mysql-build-deps \
+        mysql-client \
+        mariadb-client \
+    && docker-php-ext-install \
+        pdo_mysql \
+    && apk del -f .mysql-build-deps
+
+RUN apk add --no-cache --virtual .pgsql-build-deps \
+        postgresql-client \
+        postgresql-dev \
+    && apk add --no-cache \
+        libpq \
+    && docker-php-ext-install \
+        pdo_pgsql \
+    && apk del -f .pgsql-build-deps
 
 RUN apk add --no-cache --virtual .gd-build-deps \
         freetype-dev \
@@ -61,12 +93,6 @@ RUN apk add --no-cache imagemagick imagemagick-dev \
     && docker-php-ext-enable imagick \
     && apk del imagemagick-dev
 
-RUN apk add --no-cache ffmpeg
-
-RUN apk add --no-cache imap-dev \
-    && docker-php-ext-configure imap --with-imap-ssl \
-    && docker-php-ext-install imap
-
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
@@ -78,6 +104,8 @@ RUN pecl install xdebug \
 
 RUN rm -rf /tmp/pear \
     && apk del -f .build-deps
+
+RUN apk add --no-cache ffmpeg
 
 RUN curl -sS https://getcomposer.org/installer | php; mv composer.phar /usr/local/bin/composer;
 RUN composer global require laravel/installer
